@@ -8,10 +8,12 @@ This directory contains a minimal example plugin built against the
 - `slot0_example_plugin.c`
   - a simple slot-0 plugin showing:
     - host type aliasing
-    - host API export
+    - standalone host API stub override for local builds
     - descriptor declaration
     - slot-local code placement
     - slot-local constant placement
+- `stm32cubeide/.project`
+  - importable STM32CubeIDE/Eclipse project metadata for the example
 
 The example is intentionally simple and keeps writable runtime state out of the
 plugin image. Any mutable state should live in the host application and be

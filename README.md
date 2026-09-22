@@ -139,4 +139,5 @@ This scaffold does not emit plugin-owned writable `.data` or `.bss` into the
 
 See `examples/slot0_example_plugin.c` for a concrete slot-0 plugin example and
 `examples/example_app_types.h` for a minimal host-type bridge used by that
-example.
+example. An importable STM32CubeIDE project file is also provided at
+`examples/stm32cubeide/.project`.

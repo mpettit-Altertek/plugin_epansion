@@ -7,6 +7,7 @@ typedef app_database_t database_t;
 typedef app_eeprom_save_data_t eeprom_save_data_t;
 
 #define PLUGIN_EXPANSION_HAS_APP_TYPES
+#define EXP_PLUGIN_HOST_API_SYMBOL example_host_api_stub
 #include "plugin_expansion.h"
 
 enum
@@ -23,12 +24,26 @@ enum
 
 EXP_PLUGIN_CONST(0) static const uint8_t slot0_banner[] = "slot0-example";
 
+static database_t example_database = {
+	.plugin_runs = 0u,
+	.enabled_slots = EXAMPLE_SLOT_ENABLED_BIT,
+};
+
+static eeprom_save_data_t example_eeprom_save_data = {
+	.dirty_mask = 0u,
+};
+
+const exp_plugin_host_api_t example_host_api_stub = {
+	.database = &example_database,
+	.eeprom_save_data = &example_eeprom_save_data,
+};
+
 EXP_PLUGIN_CODE(0) static bool slot0_enabled(uint8_t expid)
 {
 	return (EXP_PLUGIN_DATABASE->enabled_slots & (uint8_t)(EXAMPLE_SLOT_ENABLED_BIT << expid)) != 0u;
 }
 
-static bool slot0_init(exp_stack_t *stk, uint8_t expid)
+EXP_PLUGIN_CODE(0) static bool slot0_init(exp_stack_t *stk, uint8_t expid)
 {
 	(void)slot0_banner;
 
@@ -43,7 +58,7 @@ static bool slot0_init(exp_stack_t *stk, uint8_t expid)
 	return slot0_enabled(expid);
 }
 
-static task_status_t slot0_task(exp_stack_t *stk, uint8_t expid, task_ix_t self)
+EXP_PLUGIN_CODE(0) static task_status_t slot0_task(exp_stack_t *stk, uint8_t expid, task_ix_t self)
 {
 	(void)self;
 
@@ -59,7 +74,7 @@ static task_status_t slot0_task(exp_stack_t *stk, uint8_t expid, task_ix_t self)
 	return EXAMPLE_TASK_READY;
 }
 
-static void slot0_uart_irq(USART_TypeDef *usart)
+EXP_PLUGIN_CODE(0) static void slot0_uart_irq(USART_TypeDef *usart)
 {
 	if (usart == 0)
 	{
@@ -68,15 +83,5 @@ static void slot0_uart_irq(USART_TypeDef *usart)
 
 	usart->isr_snapshot++;
 }
-
-const exp_plugin_host_api_t exp_plugin_host_api = {
-	.database = &(database_t){
-		.plugin_runs = 0u,
-		.enabled_slots = EXAMPLE_SLOT_ENABLED_BIT,
-	},
-	.eeprom_save_data = &(eeprom_save_data_t){
-		.dirty_mask = 0u,
-	},
-};
 
 EXP_PLUGIN_DECLARE_SLOT_0(slot0_example_descriptor, slot0_init, slot0_task, slot0_uart_irq)
