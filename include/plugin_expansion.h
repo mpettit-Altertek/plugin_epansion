@@ -127,22 +127,4 @@ typedef struct
 #define EXP_PLUGIN_DEFINE_SLOT_3(name, init_fn, task_fn, irq_fn)                                \
 	EXP_PLUGIN_DEFINE_IN_SECTION(name, 3u, EXP_PLUGIN_DESCRIPTOR_SECTION_3, init_fn, task_fn, irq_fn)
 
-#define EXP_PLUGIN_DECLARE_SLOT_0_NO_HOST_API(name, init_fn, task_fn, irq_fn)                   \
-	EXP_PLUGIN_DEFINE_STATIC_IN_SECTION(name, 0u, EXP_PLUGIN_DESCRIPTOR_SECTION_0, init_fn, task_fn, irq_fn)
-#define EXP_PLUGIN_DECLARE_SLOT_1_NO_HOST_API(name, init_fn, task_fn, irq_fn)                   \
-	EXP_PLUGIN_DEFINE_STATIC_IN_SECTION(name, 1u, EXP_PLUGIN_DESCRIPTOR_SECTION_1, init_fn, task_fn, irq_fn)
-#define EXP_PLUGIN_DECLARE_SLOT_2_NO_HOST_API(name, init_fn, task_fn, irq_fn)                   \
-	EXP_PLUGIN_DEFINE_STATIC_IN_SECTION(name, 2u, EXP_PLUGIN_DESCRIPTOR_SECTION_2, init_fn, task_fn, irq_fn)
-#define EXP_PLUGIN_DECLARE_SLOT_3_NO_HOST_API(name, init_fn, task_fn, irq_fn)                   \
-	EXP_PLUGIN_DEFINE_STATIC_IN_SECTION(name, 3u, EXP_PLUGIN_DESCRIPTOR_SECTION_3, init_fn, task_fn, irq_fn)
-
-#define EXP_PLUGIN_DEFINE_SLOT_0_NO_HOST_API(name, init_fn, task_fn, irq_fn)                    \
-	EXP_PLUGIN_DEFINE_IN_SECTION(name, 0u, EXP_PLUGIN_DESCRIPTOR_SECTION_0, init_fn, task_fn, irq_fn)
-#define EXP_PLUGIN_DEFINE_SLOT_1_NO_HOST_API(name, init_fn, task_fn, irq_fn)                    \
-	EXP_PLUGIN_DEFINE_IN_SECTION(name, 1u, EXP_PLUGIN_DESCRIPTOR_SECTION_1, init_fn, task_fn, irq_fn)
-#define EXP_PLUGIN_DEFINE_SLOT_2_NO_HOST_API(name, init_fn, task_fn, irq_fn)                    \
-	EXP_PLUGIN_DEFINE_IN_SECTION(name, 2u, EXP_PLUGIN_DESCRIPTOR_SECTION_2, init_fn, task_fn, irq_fn)
-#define EXP_PLUGIN_DEFINE_SLOT_3_NO_HOST_API(name, init_fn, task_fn, irq_fn)                    \
-	EXP_PLUGIN_DEFINE_IN_SECTION(name, 3u, EXP_PLUGIN_DESCRIPTOR_SECTION_3, init_fn, task_fn, irq_fn)
-
 #endif

@@ -17,6 +17,8 @@ typedef struct
 {
 	uint32_t plugin_runs;
 	uint8_t enabled_slots;
+	uint8_t current_expid_by_slot[4];
+	bool uart_activity_seen[4];
 } app_database_t;
 
 typedef struct

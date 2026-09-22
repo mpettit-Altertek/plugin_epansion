@@ -24,22 +24,42 @@ const exp_plugin_host_api_t exp_plugin_host_api = {
 	.eeprom_save_data = &eeprom_save_data,
 };
 
-static exp_stack_t slot0_stack;
-static USART_TypeDef slot0_usart;
+static exp_stack_t slot_stacks[EXP_PLUGIN_SLOT_COUNT];
+static USART_TypeDef slot_usarts[EXP_PLUGIN_SLOT_COUNT];
 
 extern const exp_plugin_descriptor_t example_plugin_descriptor;
 
+static bool example_descriptor_slot_valid(void)
+{
+	return example_plugin_descriptor.slot < EXP_PLUGIN_SLOT_COUNT;
+}
+
 bool example_application_init(uint8_t expid)
 {
-	return example_plugin_descriptor.init(&slot0_stack, expid);
+	if (!example_descriptor_slot_valid() || (example_plugin_descriptor.init == 0))
+	{
+		return false;
+	}
+
+	return example_plugin_descriptor.init(&slot_stacks[example_plugin_descriptor.slot], expid);
 }
 
 task_status_t example_application_task(uint8_t expid)
 {
-	return example_plugin_descriptor.task(&slot0_stack, expid, 0u);
+	if (!example_descriptor_slot_valid() || (example_plugin_descriptor.task == 0))
+	{
+		return 0;
+	}
+
+	return example_plugin_descriptor.task(&slot_stacks[example_plugin_descriptor.slot], expid, 0u);
 }
 
 void example_application_uart_irq(void)
 {
-	example_plugin_descriptor.UART_IRQHandler(&slot0_usart);
+	if (!example_descriptor_slot_valid() || (example_plugin_descriptor.UART_IRQHandler == 0))
+	{
+		return;
+	}
+
+	example_plugin_descriptor.UART_IRQHandler(&slot_usarts[example_plugin_descriptor.slot]);
 }
