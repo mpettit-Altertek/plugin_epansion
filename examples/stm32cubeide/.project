@@ -37,6 +37,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/slot0_example_plugin.c</locationURI>
 		</link>
 		<link>
+			<name>example_host_application.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/example_host_application.c</locationURI>
+		</link>
+		<link>
 			<name>plugin_expansion.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/include/plugin_expansion.h</locationURI>

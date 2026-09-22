@@ -6,12 +6,15 @@ This directory contains a minimal example plugin built against the
 - `example_app_types.h`
   - standalone host-side type aliases used only for the example
 - `slot0_example_plugin.c`
-  - a simple slot-0 plugin showing:
+  - a simple plugin showing:
+    - slot selection with `EXAMPLE_PLUGIN_SLOT=0..3`
     - host type aliasing
     - standalone host API stub override for local builds
     - descriptor declaration
     - slot-local code placement
     - slot-local constant placement
+- `example_host_application.c`
+  - application-side example showing host symbol export and descriptor use
 - `stm32cubeide/.project`
   - importable STM32CubeIDE/Eclipse project metadata for the example
 

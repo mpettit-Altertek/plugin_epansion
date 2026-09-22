@@ -11,6 +11,36 @@ typedef app_eeprom_save_data_t eeprom_save_data_t;
 #define EXP_PLUGIN_HOST_API_SYMBOL example_host_api_stub
 #include "plugin_expansion.h"
 
+#ifndef EXAMPLE_PLUGIN_SLOT
+#define EXAMPLE_PLUGIN_SLOT 0
+#endif
+
+#if (EXAMPLE_PLUGIN_SLOT < 0) || (EXAMPLE_PLUGIN_SLOT > 3)
+#error "EXAMPLE_PLUGIN_SLOT must be 0, 1, 2, or 3"
+#endif
+
+#define EXAMPLE_SLOT_BIT(slot) ((uint8_t)(1u << (slot)))
+#define EXAMPLE_SLOT_NAME_VALUE(slot) #slot
+#define EXAMPLE_SLOT_NAME(slot) EXAMPLE_SLOT_NAME_VALUE(slot)
+
+#if EXAMPLE_PLUGIN_SLOT == 0
+#define EXAMPLE_PLUGIN_DECLARE(name, init_fn, task_fn, irq_fn) EXP_PLUGIN_DECLARE_SLOT_0(name, init_fn, task_fn, irq_fn)
+#define EXAMPLE_PLUGIN_CODE EXP_PLUGIN_CODE(0)
+#define EXAMPLE_PLUGIN_CONST EXP_PLUGIN_CONST(0)
+#elif EXAMPLE_PLUGIN_SLOT == 1
+#define EXAMPLE_PLUGIN_DECLARE(name, init_fn, task_fn, irq_fn) EXP_PLUGIN_DECLARE_SLOT_1(name, init_fn, task_fn, irq_fn)
+#define EXAMPLE_PLUGIN_CODE EXP_PLUGIN_CODE(1)
+#define EXAMPLE_PLUGIN_CONST EXP_PLUGIN_CONST(1)
+#elif EXAMPLE_PLUGIN_SLOT == 2
+#define EXAMPLE_PLUGIN_DECLARE(name, init_fn, task_fn, irq_fn) EXP_PLUGIN_DECLARE_SLOT_2(name, init_fn, task_fn, irq_fn)
+#define EXAMPLE_PLUGIN_CODE EXP_PLUGIN_CODE(2)
+#define EXAMPLE_PLUGIN_CONST EXP_PLUGIN_CONST(2)
+#else
+#define EXAMPLE_PLUGIN_DECLARE(name, init_fn, task_fn, irq_fn) EXP_PLUGIN_DECLARE_SLOT_3(name, init_fn, task_fn, irq_fn)
+#define EXAMPLE_PLUGIN_CODE EXP_PLUGIN_CODE(3)
+#define EXAMPLE_PLUGIN_CONST EXP_PLUGIN_CONST(3)
+#endif
+
 enum
 {
 	EXAMPLE_TASK_IDLE = 0,
@@ -20,10 +50,10 @@ enum
 enum
 {
 	EXAMPLE_EEPROM_DIRTY_BIT = 0x01u,
-	EXAMPLE_SLOT_ENABLED_BIT = 0x01u
+	EXAMPLE_SLOT_ENABLED_BIT = EXAMPLE_SLOT_BIT(EXAMPLE_PLUGIN_SLOT)
 };
 
-EXP_PLUGIN_CONST(0) static const uint8_t slot0_banner[] = "slot0-example";
+EXAMPLE_PLUGIN_CONST static const uint8_t example_banner[] = "slot" EXAMPLE_SLOT_NAME(EXAMPLE_PLUGIN_SLOT) "-example";
 
 static database_t example_database = {
 	.plugin_runs = 0u,
@@ -40,14 +70,14 @@ const exp_plugin_host_api_t example_host_api_stub = {
 	.eeprom_save_data = &example_eeprom_save_data,
 };
 
-EXP_PLUGIN_CODE(0) static bool slot0_enabled(uint8_t expid)
+EXAMPLE_PLUGIN_CODE static bool example_slot_enabled(uint8_t expid)
 {
-	return (EXP_PLUGIN_DATABASE->enabled_slots & (uint8_t)(EXAMPLE_SLOT_ENABLED_BIT << expid)) != 0u;
+	return (EXP_PLUGIN_DATABASE->enabled_slots & EXAMPLE_SLOT_BIT(expid)) != 0u;
 }
 
-EXP_PLUGIN_CODE(0) static bool slot0_init(exp_stack_t *stk, uint8_t expid)
+EXAMPLE_PLUGIN_CODE static bool example_slot_init(exp_stack_t *stk, uint8_t expid)
 {
-	(void)slot0_banner;
+	(void)example_banner;
 
 	if (stk == 0)
 	{
@@ -57,14 +87,14 @@ EXP_PLUGIN_CODE(0) static bool slot0_init(exp_stack_t *stk, uint8_t expid)
 	stk->cycle_count = 0u;
 	stk->uart_activity_seen = false;
 
-	return slot0_enabled(expid);
+	return example_slot_enabled(expid);
 }
 
-EXP_PLUGIN_CODE(0) static task_status_t slot0_task(exp_stack_t *stk, uint8_t expid, task_ix_t self)
+EXAMPLE_PLUGIN_CODE static task_status_t example_slot_task(exp_stack_t *stk, uint8_t expid, task_ix_t self)
 {
 	(void)self;
 
-	if ((stk == 0) || !slot0_enabled(expid))
+	if ((stk == 0) || !example_slot_enabled(expid))
 	{
 		return EXAMPLE_TASK_IDLE;
 	}
@@ -76,7 +106,7 @@ EXP_PLUGIN_CODE(0) static task_status_t slot0_task(exp_stack_t *stk, uint8_t exp
 	return EXAMPLE_TASK_READY;
 }
 
-EXP_PLUGIN_CODE(0) static void slot0_uart_irq(USART_TypeDef *usart)
+EXAMPLE_PLUGIN_CODE static void example_slot_uart_irq(USART_TypeDef *usart)
 {
 	if (usart == 0)
 	{
@@ -86,4 +116,4 @@ EXP_PLUGIN_CODE(0) static void slot0_uart_irq(USART_TypeDef *usart)
 	usart->isr_snapshot++;
 }
 
-EXP_PLUGIN_DECLARE_SLOT_0(slot0_example_descriptor, slot0_init, slot0_task, slot0_uart_irq)
+EXAMPLE_PLUGIN_DECLARE(example_plugin_descriptor, example_slot_init, example_slot_task, example_slot_uart_irq)

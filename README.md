@@ -141,7 +141,16 @@ This scaffold does not emit plugin-owned writable `.data` or `.bss` into the
 
 ## Example plugin
 
-See `examples/slot0_example_plugin.c` for a concrete slot-0 plugin example and
-`examples/example_app_types.h` for a minimal host-type bridge used by that
-example. An importable STM32CubeIDE project file is also provided at
-`examples/stm32cubeide/.project`.
+See:
+
+- `examples/slot0_example_plugin.c`
+  - configurable plugin example that can be built for slots `0..3` with
+    `EXAMPLE_PLUGIN_SLOT`
+- `examples/example_host_application.c`
+  - host-side example showing how the application exports
+    `exp_plugin_host_api`, then calls plugin `init`, `task`, and
+    `UART_IRQHandler`
+- `examples/example_app_types.h`
+  - minimal example type bridge
+- `examples/stm32cubeide/.project`
+  - importable STM32CubeIDE project metadata
