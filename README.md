@@ -22,6 +22,8 @@ Minimal scaffold for STM32L496AGI3 post-compile expansion plugins.
   - Plugin ABI, section macros, and descriptor declaration helpers
 - `linker/plugin_expansion_sections.ld`
   - Linker `SECTIONS` fragment for the four `EXP_BOARD_*` memory regions
+- `examples/`
+  - standalone example plugin sources that demonstrate the ABI
 
 ## Main application integration
 
@@ -132,3 +134,9 @@ Writable runtime state should stay in the main application or in an
 application-owned RAM structure that is passed through `exp_stack_t`.
 This scaffold does not emit plugin-owned writable `.data` or `.bss` into the
 `EXP_BOARD_*` blocks.
+
+## Example plugin
+
+See `examples/slot0_example_plugin.c` for a concrete slot-0 plugin example and
+`examples/example_app_types.h` for a minimal host-type bridge used by that
+example.
