@@ -69,28 +69,35 @@ typedef app_database_t database_t;
 typedef app_eeprom_save_data_t eeprom_save_data_t;
 
 #define PLUGIN_EXPANSION_HAS_APP_TYPES
+#define PLUGIN_EXPANSION_USART_TYPE USART_TypeDef
 #include "plugin_expansion.h"
 ```
 
 `USART_TypeDef` should come from the STM32 CMSIS/HAL device header (for example
 `stm32l4xx.h`) and must still be visible when `plugin_expansion.h` is included.
+For real STM32 integration, define `PLUGIN_EXPANSION_USART_TYPE` to
+`USART_TypeDef` before including `plugin_expansion.h`.
 
 The fallback declarations in `plugin_expansion_app_types.h` are only a generic
 placeholder for isolated syntax checks. Real STM32 integration should include
 the application/CMSIS headers first so the exact project definitions of
 `exp_stack_t`, `task_status_t`, `task_ix_t`, `database_t`, and
 `eeprom_save_data_t` are used. `USART_TypeDef` must always come from the STM32
-device header and should not be supplied by the fallback bridge.
+device header and should not be supplied by the fallback bridge. If no STM32
+type is supplied, the header falls back to an opaque pointer-only USART stub for
+standalone syntax checks. That stub is only suitable for declarations and
+function signatures, not for dereferencing UART registers.
 
 If the host wants a different exported symbol name, define
 `EXP_PLUGIN_HOST_API_SYMBOL` before including `plugin_expansion.h`.
 
-The descriptor stores a reference to `EXP_PLUGIN_HOST_API_SYMBOL`, so the final
-plugin module is intended to be emitted as a relocatable post-compile object
-that is linked or loaded with a host-provided definition of that symbol (or
-with a test stub that provides the same `exp_plugin_host_api_t` object during
-standalone object validation). This scaffold does not produce a fully
-self-contained flash image with no host symbol-resolution step.
+Any plugin that uses `EXP_PLUGIN_DATABASE` or `EXP_PLUGIN_EEPROM_SAVE_DATA`
+expects a relocatable post-compile integration flow where the final plugin
+module is linked or loaded with a host-provided definition of
+`EXP_PLUGIN_HOST_API_SYMBOL` (or with a test stub that provides the same
+`exp_plugin_host_api_t` object during standalone object validation). This
+scaffold does not produce a fully self-contained flash image with no host
+symbol-resolution step for those host-backed accessors.
 
 ## Declaring a plugin
 
@@ -105,6 +112,7 @@ typedef app_database_t database_t;
 typedef app_eeprom_save_data_t eeprom_save_data_t;
 
 #define PLUGIN_EXPANSION_HAS_APP_TYPES
+#define PLUGIN_EXPANSION_USART_TYPE USART_TypeDef
 #include "plugin_expansion.h"
 
 static bool exp0_init(exp_stack_t *stk, uint8_t expid);
@@ -113,10 +121,6 @@ static void exp0_uart_irq(USART_TypeDef *usart);
 
 EXP_PLUGIN_DECLARE_SLOT_0(exp0_descriptor, exp0_init, exp0_task, exp0_uart_irq);
 ```
-
-Use `EXP_PLUGIN_DECLARE_WITH_LINKAGE_SLOT_0(extern, ...)` if a descriptor
-definition for slot 0 must be emitted with external linkage and be visible
-outside its defining translation unit.
 
 Optional placement helpers are available for slot-specific code and flash-resident
 constants:

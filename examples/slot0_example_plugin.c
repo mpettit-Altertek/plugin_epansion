@@ -7,6 +7,7 @@ typedef app_database_t database_t;
 typedef app_eeprom_save_data_t eeprom_save_data_t;
 
 #define PLUGIN_EXPANSION_HAS_APP_TYPES
+#define PLUGIN_EXPANSION_USART_TYPE USART_TypeDef
 #define EXP_PLUGIN_HOST_API_SYMBOL example_host_api_stub
 #include "plugin_expansion.h"
 
@@ -33,6 +34,7 @@ static eeprom_save_data_t example_eeprom_save_data = {
 	.dirty_mask = 0u,
 };
 
+/* The host API container is const; the host-owned objects it points to are mutable. */
 const exp_plugin_host_api_t example_host_api_stub = {
 	.database = &example_database,
 	.eeprom_save_data = &example_eeprom_save_data,
