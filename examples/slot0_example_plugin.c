@@ -19,6 +19,10 @@ typedef app_eeprom_save_data_t eeprom_save_data_t;
 #error "EXAMPLE_PLUGIN_SLOT must be 0, 1, 2, or 3"
 #endif
 
+#ifndef EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL
+#define EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL example_plugin_descriptor
+#endif
+
 #define EXAMPLE_SLOT_BIT(slot) ((uint8_t)(1u << (slot)))
 #define EXAMPLE_SLOT_NAME_VALUE(slot) #slot
 #define EXAMPLE_SLOT_NAME(slot) EXAMPLE_SLOT_NAME_VALUE(slot)
@@ -131,4 +135,4 @@ EXAMPLE_PLUGIN_CODE static void example_slot_uart_irq(USART_TypeDef *usart)
 	EXP_PLUGIN_EEPROM_SAVE_DATA->dirty_mask |= EXAMPLE_UART_ACTIVITY_BIT;
 }
 
-EXAMPLE_PLUGIN_DEFINE(example_plugin_descriptor, example_slot_init, example_slot_task, example_slot_uart_irq)
+EXAMPLE_PLUGIN_DEFINE(EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL, example_slot_init, example_slot_task, example_slot_uart_irq)

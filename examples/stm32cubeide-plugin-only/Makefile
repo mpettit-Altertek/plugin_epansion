@@ -22,7 +22,7 @@ AR ?= arm-none-eabi-ar
 BUILD_DIR := $(PROJECT_DIR)/build/$(CONFIG)
 TARGET := $(BUILD_DIR)/libplugin_example_$(CONFIG).a
 OBJECT := $(BUILD_DIR)/plugin_only.o
-SOURCE := $(PROJECT_DIR)/plugin_only.c
+SOURCE := $(EXAMPLES_DIR)/slot0_example_plugin.c
 
 CFLAGS ?= -std=c11 -Wall -Wextra -Werror -ffunction-sections -fdata-sections
 CFLAGS += -I$(EXAMPLES_DIR) -I$(REPO_ROOT)/include -DEXAMPLE_PLUGIN_SLOT=$(PLUGIN_SLOT)

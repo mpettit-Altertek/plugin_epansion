@@ -10,6 +10,10 @@ typedef app_eeprom_save_data_t eeprom_save_data_t;
 #define PLUGIN_EXPANSION_USART_TYPE USART_TypeDef
 #include "plugin_expansion.h"
 
+#ifndef EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL
+#define EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL example_plugin_descriptor
+#endif
+
 database_t database = {
 	.plugin_runs = 0u,
 	.enabled_slots = 0x0Fu,
@@ -27,7 +31,7 @@ const exp_plugin_host_api_t exp_plugin_host_api = {
 static exp_stack_t slot_stacks[EXP_PLUGIN_SLOT_COUNT];
 static USART_TypeDef slot_usarts[EXP_PLUGIN_SLOT_COUNT];
 
-extern const exp_plugin_descriptor_t example_plugin_descriptor;
+extern const exp_plugin_descriptor_t EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL;
 
 static bool example_descriptor_slot_valid(void)
 {
@@ -36,30 +40,30 @@ static bool example_descriptor_slot_valid(void)
 
 bool example_application_init(uint8_t expid)
 {
-	if (!example_descriptor_slot_valid() || (example_plugin_descriptor.init == 0))
+	if (!example_descriptor_slot_valid() || (EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL.init == 0))
 	{
 		return false;
 	}
 
-	return example_plugin_descriptor.init(&slot_stacks[example_plugin_descriptor.slot], expid);
+	return EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL.init(&slot_stacks[EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL.slot], expid);
 }
 
 task_status_t example_application_task(uint8_t expid)
 {
-	if (!example_descriptor_slot_valid() || (example_plugin_descriptor.task == 0))
+	if (!example_descriptor_slot_valid() || (EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL.task == 0))
 	{
 		return 0;
 	}
 
-	return example_plugin_descriptor.task(&slot_stacks[example_plugin_descriptor.slot], expid, 0u);
+	return EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL.task(&slot_stacks[EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL.slot], expid, 0u);
 }
 
 void example_application_uart_irq(void)
 {
-	if (!example_descriptor_slot_valid() || (example_plugin_descriptor.UART_IRQHandler == 0))
+	if (!example_descriptor_slot_valid() || (EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL.UART_IRQHandler == 0))
 	{
 		return;
 	}
 
-	example_plugin_descriptor.UART_IRQHandler(&slot_usarts[example_plugin_descriptor.slot]);
+	EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL.UART_IRQHandler(&slot_usarts[EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL.slot]);
 }
