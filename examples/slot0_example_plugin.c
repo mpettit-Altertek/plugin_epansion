@@ -63,7 +63,6 @@ EXAMPLE_PLUGIN_CONST static const uint8_t example_banner[] = "slot" EXAMPLE_SLOT
 static database_t example_database = {
 	.plugin_runs = 0u,
 	.enabled_slots = EXAMPLE_SLOT_ENABLED_BIT,
-	.current_expid_by_slot = { 0u, 0u, 0u, 0u },
 	.uart_activity_seen = { false, false, false, false },
 };
 
@@ -91,26 +90,34 @@ EXAMPLE_PLUGIN_CODE static bool example_slot_init(exp_stack_t *stk, uint8_t expi
 		return false;
 	}
 
+	if (expid != EXAMPLE_PLUGIN_SLOT)
+	{
+		return false;
+	}
+
+	if (!example_slot_enabled(expid))
+	{
+		return false;
+	}
+
 	stk->cycle_count = 0u;
 	stk->uart_activity_seen = false;
-	EXP_PLUGIN_DATABASE->current_expid_by_slot[EXAMPLE_PLUGIN_SLOT] = expid;
-	EXP_PLUGIN_DATABASE->uart_activity_seen[expid] = false;
+	EXP_PLUGIN_DATABASE->uart_activity_seen[EXAMPLE_PLUGIN_SLOT] = false;
 
-	return example_slot_enabled(expid);
+	return true;
 }
 
 EXAMPLE_PLUGIN_CODE static task_status_t example_slot_task(exp_stack_t *stk, uint8_t expid, task_ix_t self)
 {
 	(void)self;
 
-	if ((stk == 0) || (expid >= EXP_PLUGIN_SLOT_COUNT) || !example_slot_enabled(expid))
+	if ((stk == 0) || (expid >= EXP_PLUGIN_SLOT_COUNT) || (expid != EXAMPLE_PLUGIN_SLOT) || !example_slot_enabled(expid))
 	{
 		return EXAMPLE_TASK_IDLE;
 	}
 
 	stk->cycle_count++;
-	EXP_PLUGIN_DATABASE->current_expid_by_slot[EXAMPLE_PLUGIN_SLOT] = expid;
-	stk->uart_activity_seen = EXP_PLUGIN_DATABASE->uart_activity_seen[expid];
+	stk->uart_activity_seen = EXP_PLUGIN_DATABASE->uart_activity_seen[EXAMPLE_PLUGIN_SLOT];
 	EXP_PLUGIN_DATABASE->plugin_runs++;
 	EXP_PLUGIN_EEPROM_SAVE_DATA->dirty_mask |= EXAMPLE_EEPROM_DIRTY_BIT;
 
@@ -119,19 +126,13 @@ EXAMPLE_PLUGIN_CODE static task_status_t example_slot_task(exp_stack_t *stk, uin
 
 EXAMPLE_PLUGIN_CODE static void example_slot_uart_irq(USART_TypeDef *usart)
 {
-	uint8_t expid;
-
 	if (usart == 0)
 	{
 		return;
 	}
 
 	usart->isr_snapshot++;
-	expid = EXP_PLUGIN_DATABASE->current_expid_by_slot[EXAMPLE_PLUGIN_SLOT];
-	if (expid < EXP_PLUGIN_SLOT_COUNT)
-	{
-		EXP_PLUGIN_DATABASE->uart_activity_seen[expid] = true;
-	}
+	EXP_PLUGIN_DATABASE->uart_activity_seen[EXAMPLE_PLUGIN_SLOT] = true;
 	EXP_PLUGIN_EEPROM_SAVE_DATA->dirty_mask |= EXAMPLE_UART_ACTIVITY_BIT;
 }
 

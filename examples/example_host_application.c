@@ -14,6 +14,11 @@ typedef app_eeprom_save_data_t eeprom_save_data_t;
 #define EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL example_plugin_descriptor
 #endif
 
+enum
+{
+	EXAMPLE_HOST_TASK_IDLE = 0
+};
+
 database_t database = {
 	.plugin_runs = 0u,
 	.enabled_slots = 0x0Fu,
@@ -35,12 +40,17 @@ extern const exp_plugin_descriptor_t EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL;
 
 static bool example_descriptor_slot_valid(void)
 {
-	return example_plugin_descriptor.slot < EXP_PLUGIN_SLOT_COUNT;
+	return EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL.slot < EXP_PLUGIN_SLOT_COUNT;
+}
+
+static bool example_descriptor_abi_valid(void)
+{
+	return EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL.abi_version == EXP_PLUGIN_ABI_VERSION;
 }
 
 bool example_application_init(uint8_t expid)
 {
-	if (!example_descriptor_slot_valid() || (EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL.init == 0))
+	if (!example_descriptor_slot_valid() || !example_descriptor_abi_valid() || (EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL.init == 0))
 	{
 		return false;
 	}
@@ -50,9 +60,9 @@ bool example_application_init(uint8_t expid)
 
 task_status_t example_application_task(uint8_t expid)
 {
-	if (!example_descriptor_slot_valid() || (EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL.task == 0))
+	if (!example_descriptor_slot_valid() || !example_descriptor_abi_valid() || (EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL.task == 0))
 	{
-		return 0;
+		return EXAMPLE_HOST_TASK_IDLE;
 	}
 
 	return EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL.task(&slot_stacks[EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL.slot], expid, 0u);
@@ -60,7 +70,7 @@ task_status_t example_application_task(uint8_t expid)
 
 void example_application_uart_irq(void)
 {
-	if (!example_descriptor_slot_valid() || (EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL.UART_IRQHandler == 0))
+	if (!example_descriptor_slot_valid() || !example_descriptor_abi_valid() || (EXAMPLE_PLUGIN_DESCRIPTOR_SYMBOL.UART_IRQHandler == 0))
 	{
 		return;
 	}

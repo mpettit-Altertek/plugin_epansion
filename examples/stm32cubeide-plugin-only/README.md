@@ -8,7 +8,10 @@ building only the plugin example.
 - `.project`
   - importable STM32CubeIDE project metadata
 - `Makefile`
-  - builds the plugin example as a static library
+  - builds the plugin example as a linked relocatable object
+- `plugin_layout.ld`
+  - local linker script that defines the four expansion-board memory regions and
+    includes the shared plugin section layout
 
 ## Build configurations
 
@@ -22,7 +25,7 @@ The Makefile supports four plugin-slot configurations:
 Each configuration sets `EXAMPLE_PLUGIN_SLOT` to the matching slot index and
 produces:
 
-`build/<config>/libplugin_example_<config>.a`
+`build/<config>/plugin_image_<config>.o`
 
 Examples:
 
@@ -42,3 +45,5 @@ make CONFIG=slot2
 
 This project compiles the shared `examples/slot0_example_plugin.c` source only;
 it does not compile the host application example.
+The generated linked object remains a relocatable plugin artifact and still expects
+host-side resolution of `EXP_PLUGIN_HOST_API_SYMBOL` during final integration.
