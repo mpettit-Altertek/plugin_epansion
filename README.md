@@ -154,3 +154,5 @@ See:
   - minimal example type bridge
 - `examples/stm32cubeide/.project`
   - importable STM32CubeIDE project metadata
+- `examples/stm32cubeide-plugin-only/`
+  - separate STM32CubeIDE project for building only the plugin example

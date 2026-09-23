@@ -17,6 +17,8 @@ This directory contains a minimal example plugin built against the
   - application-side example showing host symbol export and descriptor use
 - `stm32cubeide/.project`
   - importable STM32CubeIDE/Eclipse project metadata for the example
+- `stm32cubeide-plugin-only/`
+  - separate STM32CubeIDE/Makefile project for compiling only the plugin
 
 The example is intentionally simple and keeps writable runtime state out of the
 plugin image. Any mutable state should live in the host application and be
